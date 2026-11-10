@@ -242,19 +242,6 @@ nav{position:sticky;top:0;z-index:50;background:rgba(8,11,18,.95);backdrop-filte
 
 <div class="page">
 
-  <div class="wallet-strip">
-    <div class="wallet-icon">💳</div>
-    <div>
-      <div class="wallet-label">Saved Payment</div>
-      <div class="wallet-card" id="walletCard">Visa •••• 7712 · Chase</div>
-    </div>
-    <div class="wallet-sep"></div>
-    <div>
-      <div class="wallet-bal-label">Wallet Balance</div>
-      <div class="wallet-bal" id="walletBal">$150.00</div>
-    </div>
-  </div>
-
   <div style="margin-bottom:2.5rem">
     <div class="section-hdr">
       <div class="section-title">New Releases</div>
