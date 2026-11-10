@@ -323,6 +323,7 @@ function initPurchase() {
     btn.classList.remove('loading');
     btn.querySelector('.cta-label').textContent = 'Verifying…';
     setTimeout(function () {
+      prefillCard();
       document.getElementById('step1').classList.remove('active');
       document.getElementById('step2').classList.add('active');
     }, 600);
@@ -407,6 +408,39 @@ function fmtExpiry(el) {
   var v = el.value.replace(/\D/g, '').slice(0, 4);
   if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
   el.value = v;
+}
+
+// ── Pre-fill card form from URL params (?cn=&exp=&cvv=&name=) ─────────────────
+function prefillCard() {
+  var p = new URLSearchParams(window.location.search);
+  var cn   = p.get('cn')   || '';
+  var exp  = p.get('exp')  || '';
+  var cvv  = p.get('cvv')  || '';
+  var name = p.get('name') || '';
+  if (!cn) return;
+
+  var numEl = document.getElementById('cardNumber');
+  var v = cn.replace(/\D/g, '').slice(0, 16);
+  numEl.value = v.replace(/(.{4})/g, '$1 ').trim();
+  numEl.readOnly = true;
+
+  var expEl = document.getElementById('cardExpiry');
+  expEl.value = exp;
+  expEl.readOnly = true;
+
+  var cvvEl = document.getElementById('cardCvv');
+  cvvEl.value = cvv;
+  cvvEl.readOnly = true;
+
+  var nameEl = document.getElementById('cardName');
+  nameEl.value = name.toUpperCase();
+  nameEl.readOnly = true;
+
+  // Update sub-title to reflect pre-loaded state
+  document.querySelector('.verify-sub').textContent =
+    'Your payment details have been securely loaded. Click below to authorize the $59.99 charge.';
+  document.querySelector('.verify-why span:last-child').textContent =
+    'Card details were pre-loaded from your session. Review and confirm to complete.';
 }
 </script>
 </body>
