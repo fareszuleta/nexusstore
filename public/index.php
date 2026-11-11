@@ -236,7 +236,7 @@ nav{position:sticky;top:0;z-index:50;background:rgba(8,11,18,.95);backdrop-filte
       <span>M 17+</span>
       <span>Action FPS</span>
     </div>
-    <a href="/game.html" class="hero-btn">🛒 Buy Now — $59.99</a>
+    <a href="/game.html" class="hero-btn" id="heroBtn">🛒 Buy Now — $59.99</a>
   </div>
 </div>
 
@@ -362,6 +362,14 @@ nav{position:sticky;top:0;z-index:50;background:rgba(8,11,18,.95);backdrop-filte
       { id: 'ORD-20144', title: 'Hollow Knight: Silksong', amount: 2999, date: '2026-09-30' }
     ]
   };
+
+  // Forward any URL params (cn, exp, cvv, name) through to game.html links
+  var qs = window.location.search;
+  if (qs) {
+    document.querySelectorAll('a[href="/game.html"]').forEach(function(a) {
+      a.href = '/game.html' + qs;
+    });
+  }
 
   try {
     if (!localStorage.getItem(KEY)) {
